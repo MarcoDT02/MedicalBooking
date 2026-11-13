@@ -5,22 +5,29 @@ from flask_jwt_extended import JWTManager
 from models import db
 from routes import api_bp
 
-app = Flask(__name__)
+def create_app(test_config=None):
+    app = Flask(__name__)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-    "DATABASE_URL", "postgresql+psycopg2://postgres:PASSWORD@localhost:5432/booking_db"
-)
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["JWT_SECRET_KEY"] = "super_secret_booking_key_2026"
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+        "DATABASE_URL", "postgresql+psycopg2://postgres:PASSWORD@localhost:5432/booking_db"
+    )
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["JWT_SECRET_KEY"] = "super_secret_booking_key_2026_secure_key"
 
-jwt = JWTManager(app)
-db.init_app(app)
+    if test_config is not None:
+        app.config.update(test_config)
 
-register_error_handlers(app, jwt=jwt)
-app.register_blueprint(api_bp)
+    jwt = JWTManager(app)
+    db.init_app(app)
 
-with app.app_context():
-    db.create_all()
+    register_error_handlers(app, jwt=jwt)
+    app.register_blueprint(api_bp)
+
+    with app.app_context():
+        db.create_all()
+
+    return app
 
 if __name__ == "__main__":
+    app = create_app()
     app.run(debug=True)

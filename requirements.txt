@@ -3,3 +3,4 @@ Flask-SQLAlchemy
 Flask-JWT-Extended
 marshmallow
 psycopg2-binary
+pytest
